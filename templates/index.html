@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Search</title>
+</head>
+<body>
+    <h1>Search for Names in Excel Files</h1>
+    <form action="/" method="POST">
+        {% for i in range(1, 9) %}
+            <label for="name{{ i }}">Name {{ i }}:</label>
+            <input type="text" id="name{{ i }}" name="name{{ i }}">
+            <br>
+        {% endfor %}
+        <br>
+
+        <label>Select Excel files to search:</label>
+        <br>
+        {% for file in excel_files %}
+            <input type="checkbox" id="{{ file }}" name="excel_files" value="{{ file }}">
+            <label for="{{ file }}">{{ file }}</label>
+            <br>
+        {% endfor %}
+        <br>
+
+        <!-- Add chart type dropdown menu -->
+        <label for="chart_type">Chart type:</label>
+        <select id="chart_type" name="chart_type" required>
+            <option value="pie">Pie</option>
+            <option value="bar">Bar</option>
+            <option value="doughnut">Doughnut</option>
+            <option value="line">Line</option>
+        </select>
+        <br>
+        <br>
+
+        <button type="submit">Search</button>
+    </form>
+</body>
+</html>

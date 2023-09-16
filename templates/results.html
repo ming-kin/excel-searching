@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Search Results</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <style>
+    .chart-container {
+        position: relative;
+        max-width: 800px; /* Set the maximum width of the chart */
+        margin: auto; /* Center the chart horizontally */
+    }
+    </style>
+</head>
+<body>
+    <h1>Search Results</h1>
+
+    <div id="content">
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+        </div>
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Count</th>
+            </tr>
+            {% for model, count in model_counts.items() %}
+            <tr>
+                <td>{{ model }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <button onclick="downloadContent()">Download Chart and Table</button>
+
+    <a href="/">Search again</a>
+
+    <script>
+        // Color array for different segments of the chart
+        const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#9CCC65', '#FF6B6B', '#1D4ED8'];
+
+        const model_counts = {{ model_counts | tojson }};
+        const labels = Object.keys(model_counts);
+        const data = Object.values(model_counts);
+
+        // Get the chart type from the server
+        const chartType = "{{ chart_type }}";
+
+        const ctx = document.getElementById('chart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: chartType, // Use the user-selected chart type
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: chartType === 'line' ? colors[0] : colors.slice(0, labels.length),
+                    borderColor: chartType === 'line' ? colors[0] : undefined,
+                    fill: chartType === 'line'
+                }]
+            },
+            options: {
+                responsive: true, // Enable responsiveness
+                maintainAspectRatio: false, // Do not maintain aspect ratio
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        function downloadContent() {
+            var content = document.getElementById('content');
+
+            html2canvas(content, {
+                // Ensure that the background is white
+                backgroundColor: 'white',
+            }).then(function(canvas) {
+                var link = document.createElement('a');
+                link.download = 'content.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
